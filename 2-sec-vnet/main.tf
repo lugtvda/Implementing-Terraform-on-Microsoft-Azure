@@ -111,7 +111,7 @@ resource "azuread_service_principal" "vnet_peering" {
 
 resource "azuread_service_principal_password" "vnet_peering" {
   service_principal_id = azuread_service_principal.vnet_peering.id
-  value                = random_password.vnet_peering.result
+#  value                = random_password.vnet_peering.result
   end_date_relative    = "17520h"
 }
 
@@ -148,7 +148,7 @@ export TF_VAR_sec_vnet_name=${module.vnet-sec.vnet_name}
 export TF_VAR_sec_sub_id=${data.azurerm_subscription.current.subscription_id}
 export TF_VAR_sec_client_id=${azuread_service_principal.vnet_peering.application_id}
 export TF_VAR_sec_principal_id=${azuread_service_principal.vnet_peering.id}
-export TF_VAR_sec_client_secret='${random_password.vnet_peering.result}'
+export TF_VAR_sec_client_secret='${azuread_service_principal_password.vnet_peering.value}
 export TF_VAR_sec_resource_group=${var.sec_resource_group_name}
 export TF_VAR_sec_tenant_id=${data.azurerm_subscription.current.tenant_id}
 
@@ -164,7 +164,7 @@ $env:TF_VAR_sec_vnet_name="${module.vnet-sec.vnet_name}"
 $env:TF_VAR_sec_sub_id="${data.azurerm_subscription.current.subscription_id}"
 $env:TF_VAR_sec_client_id="${azuread_service_principal.vnet_peering.application_id}"
 $env:TF_VAR_sec_principal_id="${azuread_service_principal.vnet_peering.id}"
-$env:TF_VAR_sec_client_secret="${random_password.vnet_peering.result}"
+$env:TF_VAR_sec_client_secret="${azuread_service_principal_password.vnet_peering.value}"
 $env:TF_VAR_sec_resource_group="${var.sec_resource_group_name}"
 $env:TF_VAR_sec_tenant_id="${data.azurerm_subscription.current.tenant_id}"
 
@@ -188,7 +188,8 @@ output "service_principal_client_id" {
 }
 
 output "service_principal_client_secret" {
-  value = nonsensitive(random_password.vnet_peering.result)
+  #value = nonsensitive(random_password.vnet_peering.result)
+  value = nonsensitive(azuread_service_principal_password.vnet_peering.value)
 }
 
 output "resource_group_name" {
